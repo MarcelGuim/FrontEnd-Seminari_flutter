@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:seminari_flutter/provider/users_provider.dart';
+import 'package:seminari_flutter/models/user.dart';
 
 class AuthService {
   bool isLoggedIn = false; // Variable para almacenar el estado de autenticación

@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seminari_flutter/provider/users_provider.dart';
 import 'package:seminari_flutter/widgets/Layout.dart';
+import 'package:seminari_flutter/models/user.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
+  // Removed from here as context is not accessible in the widget class.
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -15,14 +16,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Carregar usuaris quan la pàgina es carrega
-    Future.microtask(() => 
-      Provider.of<UserProvider>(context, listen: false).loadUsers()
-    );
   }
+
   @override
   Widget build(BuildContext context) {
-
+    final currentUser = context.watch<UserProvider>().currentUser;
+    print(
+      "Current user at the opening of the home screen: ${currentUser.name}",
+    );
     return LayoutWrapper(
       title: 'Home',
       child: SingleChildScrollView(
@@ -45,8 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Benvinguts a la App Demo de Flutter',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            'Benvingut ${currentUser.name} a la App Demo de Flutter',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
                             ),
@@ -63,22 +66,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 8),
                           _buildFeatureItem(
-                            context, 
-                            'Usuaris', 
+                            context,
+                            'Usuaris',
                             'Veure, crear i eliminar perfils d\'usuari',
                             Icons.people,
                           ),
                           const SizedBox(height: 8),
                           _buildFeatureItem(
-                            context, 
+                            context,
                             'Integració amb la API del seminari API amb express',
                             'Connecta a un backend MongoDB mitjançant crides API',
                             Icons.api,
                           ),
                           const SizedBox(height: 8),
                           _buildFeatureItem(
-                            context, 
-                            'Gestió d\'estats', 
+                            context,
+                            'Gestió d\'estats',
                             'Utilitza Provider per a la gestió d\'estats a tota l\'app',
                             Icons.sync_alt,
                           ),
@@ -96,15 +99,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFeatureItem(BuildContext context, String title, String description, IconData icon) {
+  Widget _buildFeatureItem(
+    BuildContext context,
+    String title,
+    String description,
+    IconData icon,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: Theme.of(context).colorScheme.primary,
-          size: 24,
-        ),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
         const SizedBox(width: 12),
         Expanded(
           child: Column(

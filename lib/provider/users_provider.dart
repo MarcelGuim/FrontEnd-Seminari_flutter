@@ -6,13 +6,25 @@ class UserProvider with ChangeNotifier {
   List<User> _users = [];
   bool _isLoading = false;
   String? _error;
-
+  User currentUser = User(
+    id: null,
+    name: 'Unknown',
+    age: 0,
+    email: '',
+    password: '',
+  );
   List<User> get users => _users;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
   void _setLoading(bool loading) {
     _isLoading = loading;
+    notifyListeners();
+  }
+
+  void setCurrentUser(User user) {
+    print('Actualitzant usuari a: ${user.name}');
+    currentUser = user;
     notifyListeners();
   }
 
@@ -36,12 +48,22 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> crearUsuari(String nom, int edat, String email, String password) async {
+  Future<bool> crearUsuari(
+    String nom,
+    int edat,
+    String email,
+    String password,
+  ) async {
     _setLoading(true);
     _setError(null);
 
     try {
-      final nouUsuari = User(name: nom, age: edat, email: email,password: password);
+      final nouUsuari = User(
+        name: nom,
+        age: edat,
+        email: email,
+        password: password,
+      );
       final createdUser = await UserService.createUser(nouUsuari);
       _users.add(nouUsuari);
       _setLoading(false);
@@ -54,10 +76,10 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> eliminarUsuariPerId (String id) async {
+  Future<bool> eliminarUsuariPerId(String id) async {
     _setLoading(true);
     _setError(null);
-    try{
+    try {
       final success = await UserService.deleteUser(id);
       if (success) {
         _users.removeWhere((user) => user.id == id);
@@ -71,6 +93,7 @@ class UserProvider with ChangeNotifier {
       return false;
     }
   }
+
   Future<bool> eliminarUsuari(String name) async {
     _setLoading(true);
     _setError(null);
@@ -78,16 +101,16 @@ class UserProvider with ChangeNotifier {
     try {
       // Trobem l'usuari pel nom
       final userToDelete = _users.firstWhere((user) => user.name == name);
-      
+
       if (userToDelete.id != null) {
         final success = await UserService.deleteUser(userToDelete.id!);
-        
+
         if (success) {
           // Eliminar l'usuari de la llista local
           _users.removeWhere((user) => user.name == name);
           notifyListeners();
         }
-        
+
         _setLoading(false);
         return success;
       } else {
