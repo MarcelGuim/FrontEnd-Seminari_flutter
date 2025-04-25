@@ -90,12 +90,14 @@ class PerfilScreen extends StatelessWidget {
                             Icons.edit,
                             'Editar Perfil',
                             'Actualitza la teva informació personal',
+                            onTap: () => context.go('/editar'),
                           ),
                           _buildSettingItem(
                             context,
                             Icons.lock,
                             'Canviar contrasenya',
                             'Actualitzar la contrasenya',
+                            onTap: () => context.go('/password'),
                           ),
                         ],
                       ),
@@ -176,14 +178,15 @@ class PerfilScreen extends StatelessWidget {
     BuildContext context,
     IconData icon,
     String title,
-    String subtitle,
-  ) {
+    String subtitle, {
+    VoidCallback? onTap,
+  }) {
     return ListTile(
       leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       subtitle: Text(subtitle),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }

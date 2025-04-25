@@ -28,6 +28,34 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> modificarUsuari(
+    String? id,
+    String nom,
+    int edat,
+    String email,
+  ) async {
+    _setLoading(true);
+    _setError(null);
+    try {
+      final nouUsuari = User(
+        id: id,
+        name: nom,
+        age: edat,
+        email: email,
+        password: currentUser.password,
+      );
+      final createdUser = await UserService.modificaUser(nouUsuari);
+      setCurrentUser(createdUser);
+      _setLoading(false);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _setError('Error creating user: $e');
+      _setLoading(false);
+      return false;
+    }
+  }
+
   void _setError(String? errorMessage) {
     _error = errorMessage;
     notifyListeners();
@@ -122,6 +150,35 @@ class UserProvider with ChangeNotifier {
       }
     } catch (e) {
       _setError('Error deleting user: $e');
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<bool> canviarContrasenya(String password) async {
+    _setLoading(true);
+    _setError(null);
+    final newUser = User(
+      id: currentUser.id,
+      name: currentUser.name,
+      age: currentUser.age,
+      email: currentUser.email,
+      password: password,
+    );
+    try {
+      final user = await UserService.modificaUser(newUser);
+
+      if (user != null) {
+        // Actualitzar l'usuari actual amb la nova contrasenya
+        currentUser = user;
+        notifyListeners();
+        return true;
+      } else {
+        _setError('Error canviant contrasenya: Usuari no trobat');
+        return false;
+      }
+    } catch (e) {
+      _setError('Error canviant contrasenya: $e');
       _setLoading(false);
       return false;
     }

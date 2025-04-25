@@ -6,16 +6,14 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class UserService {
   static String get baseUrl {
-  if (kIsWeb) {
-    return 'http://localhost:9000/api/users';
-  } 
-  else if (!kIsWeb && Platform.isAndroid) {
-    return 'http://10.0.2.2:9000/api/users';
-  } 
-  else {
-    return 'http://localhost:9000/api/users';
+    if (kIsWeb) {
+      return 'http://localhost:9000/api/users';
+    } else if (!kIsWeb && Platform.isAndroid) {
+      return 'http://10.0.2.2:9000/api/users';
+    } else {
+      return 'http://localhost:9000/api/users';
+    }
   }
-}
 
   static Future<List<User>> getUsers() async {
     final response = await http.get(Uri.parse(baseUrl));
@@ -39,6 +37,21 @@ class UserService {
       return User.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Error al crear usuari: ${response.statusCode}');
+    }
+  }
+
+  static Future<User> modificaUser(User user) async {
+    final response = await http.put(
+      Uri.parse(baseUrl + "/${user.id}"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(user.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      return User.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Error al modificar usuari: ${response.statusCode}');
     }
   }
 
